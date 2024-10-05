@@ -45,11 +45,11 @@ window_size = 100
 stride = 20
 
 f = 'Sheco_dataset/'
-X_train,Y_Pos_train, Physics_Vec_train, x_vel_train, y_vel_train, x0_list_train, y0_list_train, size_of_each_train = import_agrobot_dataset_p1(dataset_folder=f, type_flag=1, window_size=window_size, stride=stride)
+X_train,Y_Pos_train, Physics_Vec_train, x_vel_train, y_vel_train, x0_list_train, y0_list_train, size_of_each_train = import_sheco_dataset_p1(dataset_folder=f, type_flag=1, window_size=window_size, stride=stride)
 P = np.repeat(Physics_Vec_train,window_size).reshape((Physics_Vec_train.shape[0],window_size,1))
 X_train = np.concatenate((X_train,P),axis=2)
 
-X_test,Y_Pos_test, Physics_Vec_test, x_vel_test, y_vel_test, x0_list_test, y0_list_test, size_of_each_test= import_agrobot_dataset_p1(type_flag = 2, dataset_folder=f,window_size=window_size, stride=stride)
+X_test,Y_Pos_test, Physics_Vec_test, x_vel_test, y_vel_test, x0_list_test, y0_list_test, size_of_each_test= import_sheco_dataset_p1(type_flag = 2, dataset_folder=f,window_size=window_size, stride=stride)
 P_test = np.repeat(Physics_Vec_test,window_size).reshape((Physics_Vec_test.shape[0],window_size,1))
 X_test = np.concatenate((X_test,P_test),axis=2)
 
@@ -75,6 +75,25 @@ for i in range(len(size_of_each_test)):
     ATE_dist.append(Cal_len_meters(Gvx, Gvy))
     RTE_dist.append(Cal_len_meters(Gvx, Gvy, 600))
     print('ATE, RTE, Trajectory Length, Trajectory Length (60 seconds)',ATE[i],RTE[i],ATE_dist[i],RTE_dist[i])
+
+
+    plt.figure()  # Create a new figure
+    plt.plot(Gvx[0:5000], Gvy[0:5000], label='Ground Truth', linestyle='-')
+    plt.plot(Pvx[0:5000], Pvy[0:5000], label='Predicted Trajectory', linestyle='-')
+
+    # Add labels and title
+    plt.xlabel('East (m)')
+    plt.ylabel('North (m)')
+    plt.title('Trajectory Comparison')
+    plt.legend(loc='best')
+
+    # Save the figure as PNG
+    plt.savefig('Sheco_dataset/results/trajectory_comparison_test.png', dpi=300)
+    print("Figure saved as 'trajectory_comparison_test.png'.")
+
+    # Optional: if you are in an environment where plt.show() is supported
+    plt.show()  # Uncomment this if plt.show() is supported and needed.
+
     
 print('Median ATE and RTE', np.median(ATE),np.median(RTE))
 print('Mean ATE and RTE', np.mean(ATE),np.mean(RTE))
@@ -94,11 +113,7 @@ for i in range(len(size_of_each_train)):
     
     at, rt, at_all, rt_all = Cal_TE(Gvx, Gvy, Pvx, Pvy,
                                     sampling_rate=100,window_size=window_size,stride=stride)
-    ATE.append(at)
-    RTE.append(rt)
-    ATE_dist.append(Cal_len_meters(Gvx, Gvy))
-    RTE_dist.append(Cal_len_meters(Gvx, Gvy, 600))
-    print('ATE, RTE, Trajectory Length, Trajectory Length (60 seconds)',ATE[i],RTE[i],ATE_dist[i],RTE_dist[i])
+
     
 print('Median ATE and RTE', np.median(ATE),np.median(RTE))
 print('Mean ATE and RTE', np.mean(ATE),np.mean(RTE))

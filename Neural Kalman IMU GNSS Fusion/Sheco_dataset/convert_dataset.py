@@ -40,6 +40,6 @@ def convert_dataset(input_csv, output_csv):
     df_new.to_csv(output_csv, index=False)
 
 # Example usage
-input_csv = 'merged_output1.csv'
-output_csv = 'sheco1.csv'
+input_csv = 'merged_output_py_final3.csv'
+output_csv = 'sheco3_100.csv'
 convert_dataset(input_csv, output_csv)
