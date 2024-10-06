@@ -10,7 +10,8 @@ GYROSCOPE_NOISE_VARIANCE = 0.0000030462       # (rad/s)^2
 GYROSCOPE_ARW = [3.09, 2.7, 5.4]              # deg/sqrt(hr)
 GYROSCOPE_BI = [88.91, 78.07, 211.4]          # deg/hr
 
-GPS_VELOCITY_NOISE_VARIANCE = 0.0025
+# GPS_VELOCITY_NOISE_VARIANCE = 0.0025
+GPS_VELOCITY_NOISE_VARIANCE = 0.1
 GPS_POSITION_NOISE_VARIANCE = 1.5**2
 
 def kalman_predict(X, P, Q, A, B, G, T):
@@ -73,7 +74,8 @@ def neural_ekf_gnss_imu_2(net_inp_mat, GT_vel_x, GT_vel_y, size_of_each,
         GPS_VELOCITY_NOISE_VARIANCE
     ])
 
-    P = 1e-5 * np.zeros((4, 4))
+    # P = 1e-5 * np.zeros((4, 4))
+    P = 1e-5 * np.eye(4)
     gps_counter = 1
 
     # 입력 데이터의 채널 수에 맞게 변수 설정

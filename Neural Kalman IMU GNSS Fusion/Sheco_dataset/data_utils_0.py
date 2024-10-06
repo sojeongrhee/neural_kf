@@ -25,7 +25,20 @@ x_vel, y_vel: windowed x and y velocities (output of NN)
 x0_list, y0_list: initial coordinates for each trajectory (useful for plotting)
 size_of_each: index of new trajectory in windowed files (useful for plotting)
 '''
+import tensorflow as tf
 
+# GPU 설정
+physical_devices = tf.config.list_physical_devices('GPU')
+if physical_devices:
+    try:
+        for device in physical_devices:
+            tf.config.experimental.set_memory_growth(device, True)
+        print(f'{len(physical_devices)} GPU(s) available. Using GPU.')
+    except RuntimeError as e:
+        print(e)
+else:
+    print("No GPU available. Running on CPU.")
+    
 def import_sheco_dataset_p1(dataset_folder = 'Sheco_dataset', 
                               type_flag = 1, 
                               window_size = 50, 
@@ -34,7 +47,7 @@ def import_sheco_dataset_p1(dataset_folder = 'Sheco_dataset',
     x0_list = []
     y0_list = []
     size_of_each = []
-    X = np.empty([0, window_size, 6])
+    X = np.empty([0, window_size, 9])   # w/o magnetometer, 6
     Y_pos = np.empty([0,window_size, 2])
     x_vel = np.empty([0])
     y_vel = np.empty([0])
@@ -57,7 +70,7 @@ def import_sheco_dataset_p1(dataset_folder = 'Sheco_dataset',
             mask = np.isnan(cur_GT[:,i])
             cur_GT[mask,i] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), cur_GT[~mask,i])
         #unit of IMU and compass data: acc: g, gyro: dps mag: uT
-        cur_train = cur_file[['Ax','Ay','Az','Gx','Gy','Gz']].to_numpy()
+        cur_train = cur_file[['Ax','Ay','Az','Gx','Gy','Gz', 'Mx', 'My', 'Mz']].to_numpy()  #w/o magnetometer, remove Mx, My, Mz
 
         ''' Pixhawk는 dps 쓰는 것 같은데 imu data는 rad 같음. 확인 필요 '''
         cur_train[:,3:6] = cur_train[:,3:6]*0.0174533 #dps to rad/s
